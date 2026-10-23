@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Neón Breaker — Axel Manotoa</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230a0e17'/><rect x='16' y='24' width='28' height='12' rx='3' fill='%23ff4d6d'/><rect x='50' y='24' width='28' height='12' rx='3' fill='%2338bdf8'/><circle cx='50' cy='72' r='8' fill='%23fff'/></svg>">
+  <style>
+    html, body { margin: 0; height: 100%; background: #05070d; overflow: hidden; }
+    #juego { position: absolute; inset: 0; }
+    canvas { display: block; }
+    footer {
+      position: fixed; bottom: 8px; right: 14px; z-index: 10;
+      font: 11px/1 "Segoe UI", system-ui, sans-serif;
+      color: #334155; letter-spacing: .12em;
+    }
+  </style>
+</head>
+<body>
+  <div id="juego"></div>
+  <footer>AXEL MANOTOA · ISWD823</footer>
+
+  <!-- Paso 3 del taller: Phaser por CDN, sin build y sin node_modules -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
+
+  <!-- Orden de carga: utilidades -> datos -> texturas -> escenas -> arranque -->
+  <script src="js/util.js"></script>
+  <script src="js/niveles.js"></script>
+  <script src="js/texturas.js"></script>
+  <script src="js/escenas/BootScene.js"></script>
+  <script src="js/escenas/PreloaderScene.js"></script>
+  <script src="js/escenas/MenuScene.js"></script>
+  <script src="js/escenas/JuegoScene.js"></script>
+  <script src="js/escenas/FinScene.js"></script>
+
+  <!-- Paso 4 del taller: configuración del juego -->
+  <script src="game.js"></script>
+</body>
+</html>
