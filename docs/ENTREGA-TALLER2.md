@@ -37,6 +37,8 @@ Licencia: MIT · Assets procedimentales CC0.
    Butler desde `broth.itch.zone` y lo sube a Itch.io en cada push a main.
    Se evita la acción comunitaria rota `josephbmanley/butler-publish-itchio-action@v1.0.3`
    (usa el dominio muerto `broth.itch.ovh`).
+   **Incluye guardia de Secrets:** si aún no están los 3 Secrets, el job termina en verde con un
+   aviso y omite el despliegue, en vez de fallar y mandar correos de error en cada push.
 
 ## Lo que falta (requiere tu cuenta de Itch.io)
 
@@ -81,12 +83,27 @@ git push origin main
 Ve a la pestaña **Actions** del repositorio en GitHub. Verás el workflow ejecutándose.
 En ~2 minutos, el juego estará actualizado en Itch.io.
 
+### Paso 5 — Marcar el canal como HTML5 (solo la primera vez)
+
+Esto **no lo hace el workflow**: itch.io no detecta juegos web por el nombre del canal, aunque se
+llame `web`. Después del primer push correcto:
+
+1. Entra a **Edit game** en itch.io.
+2. En la sección de **Uploads**, edita el canal `web` y marca **"HTML5 / Playable in browser"**.
+3. Cambia el tipo de la página de *Downloadable* a **HTML**.
+4. **Save**. A partir de ahí el juego se juega en el navegador dentro de itch.io.
+
+> Ojo: el `index.html` de la raíz del paquete es la landing page, y el botón JUGAR abre
+> `juego/index.html`. Ambos van en el mismo ZIP, así que el embed funciona tal cual.
+
 ## Si algo falla
 
 | Problema | Solución |
 |---|---|
 | El workflow falla en "Install Butler" con `Could not resolve host: broth.itch.ovh` | Eso es la acción rota; el workflow actual ya usa `broth.itch.zone`. Asegúrate de tener el último `deploy-itchio.yml`. |
-| El workflow falla en "Push to Itch.io" | Los Secrets no están configurados o el proyecto en Itch.io no existe todavía. |
-| Butler dice "game not found" | El slug `ITCHIO_GAME` no coincide con el de itch.io (revisa la URL) |
+| El workflow sale verde pero dice "Despliegue omitido" | Es lo esperado: faltan los 3 Secrets. Completa los pasos 1–3. |
+| Butler dice "Please set BUTLER_API_KEY" | `ITCHIO_API_KEY` está vacío o mal copiado; regenera la key en itch.io. |
+| Butler dice "game not found" | El slug `ITCHIO_GAME` no coincide con el de itch.io (revisa la URL) o el proyecto aún no existe. |
+| En itch.io el juego se descarga en vez de jugarse | Falta el paso 5: marcar el canal `web` como HTML5. |
 | La landing page da 404 | Pages sirve desde `main` / `/(root)`; el `index.html` debe estar en la raíz |
 | El juego no carga desde la landing | Verifica que `juego/index.html` existe y los scripts tienen `../` como prefijo |

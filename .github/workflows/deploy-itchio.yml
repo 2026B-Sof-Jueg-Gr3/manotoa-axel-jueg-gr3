@@ -12,7 +12,8 @@
 #       - ITCHIO_USERNAME = tu usuario de itch.io (ej: axel-manotoa)
 #       - ITCHIO_GAME     = slug del juego (ej: neon-breaker)
 #
-#  Después de eso, cada git push a main publica el juego solo.
+#  Mientras no estén los 3 Secrets, el job termina en VERDE con un
+#  aviso (no falla): así no llegan correos de error en cada push.
 # ============================================================
 
 name: Deploy to Itch.io
@@ -32,29 +33,62 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 2. Empaquetar el juego
-      #    Incluye index.html, game.js, js/, docs/ y juego/ para que funcione
-      #    tanto la landing page como el canvas de Phaser.
+      # 2. Comprobar que la configuración está completa.
+      #    Los secrets se pasan por env (no se interpolan en el run)
+      #    para evitar problemas con caracteres especiales.
+      - name: Verificar configuración
+        id: config
+        env:
+          ITCH_KEY: ${{ secrets.ITCHIO_API_KEY }}
+          ITCH_USER: ${{ secrets.ITCHIO_USERNAME }}
+          ITCH_GAME: ${{ secrets.ITCHIO_GAME }}
+        run: |
+          if [ -z "$ITCH_KEY" ] || [ -z "$ITCH_USER" ] || [ -z "$ITCH_GAME" ]; then
+            echo "listo=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Despliegue omitido: faltan los Secrets de Itch.io."
+            echo "Configura ITCHIO_API_KEY, ITCHIO_USERNAME e ITCHIO_GAME en"
+            echo "Settings > Secrets and variables > Actions."
+            echo "Instrucciones completas: docs/ENTREGA-TALLER2.md"
+          else
+            echo "listo=true" >> "$GITHUB_OUTPUT"
+            echo "Configuracion completa. Destino: $ITCH_USER/$ITCH_GAME:web"
+          fi
+
+      # 3. Empaquetar el juego (se ejecuta siempre: valida que todo existe)
       - name: Pack game files
         run: |
           mkdir -p dist
           cp -r index.html juego js game.js docs dist/
-          ls -R dist
+          test -f dist/index.html && test -f dist/juego/index.html && test -f dist/game.js
+          echo "Paquete listo:"
+          find dist -type f | sort
 
-      # 3. Instalar Butler directamente desde el mirror oficial actual
-      #    (la acción comunitaria josephbmanley/butler-publish-itchio-action@v1.0.3
-      #    está rota porque apunta al dominio antiguo broth.itch.ovh).
+      # 4. Instalar Butler desde el mirror oficial actual.
+      #    Se evita josephbmanley/butler-publish-itchio-action@v1.0.3:
+      #    su Dockerfile apunta al dominio muerto broth.itch.ovh.
       - name: Install Butler
+        if: steps.config.outputs.listo == 'true'
         run: |
-          curl -L -o butler.zip https://broth.itch.zone/butler/linux-amd64/LATEST/archive/default
-          unzip butler.zip
+          curl -fL -o butler.zip https://broth.itch.zone/butler/linux-amd64/LATEST/archive/default
+          unzip -o butler.zip
           chmod +x butler
           sudo mv butler /usr/local/bin/butler
           butler --version
 
-      # 4. Iniciar sesión y subir a Itch.io
+      # 5. Subir a Itch.io
       - name: Push to Itch.io
+        if: steps.config.outputs.listo == 'true'
         env:
           BUTLER_API_KEY: ${{ secrets.ITCHIO_API_KEY }}
+          ITCH_USER: ${{ secrets.ITCHIO_USERNAME }}
+          ITCH_GAME: ${{ secrets.ITCHIO_GAME }}
+          VERSION: ${{ github.sha }}
         run: |
-          butler push dist ${{ secrets.ITCHIO_USERNAME }}/${{ secrets.ITCHIO_GAME }}:web --userversion "${{ github.sha }}"
+          butler push dist "$ITCH_USER/$ITCH_GAME:web" --userversion "${VERSION:0:7}"
+
+      # 6. Recordatorio: itch.io NO detecta HTML5 por el nombre del canal.
+      - name: Recordatorio post-despliegue
+        if: steps.config.outputs.listo == 'true'
+        run: |
+          echo "::notice::Primer push: en itch.io > Edit game, marca el canal 'web' como"
+          echo "'HTML5 / Playable in browser' y pon la pagina en modo HTML."

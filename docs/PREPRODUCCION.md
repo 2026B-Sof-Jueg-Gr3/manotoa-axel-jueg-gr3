@@ -117,9 +117,18 @@ y el juego sea el destino del botón.
 El workflow se activa en cada **push a `main`** y hace lo siguiente:
 
 1. **Checkout** del repositorio con `actions/checkout@v4`.
-2. **Empaqueta** el juego (`index.html`, `juego/`, `js/`, `game.js`, `docs/` → `dist/`).
-3. **Instala Butler** desde `broth.itch.zone` y lo ejecuta con `butler push dist ...:web`,
-   usando el API key guardado en los **Secrets** del repositorio.
+2. **Verifica los Secrets.** Si faltan, el job acaba en verde con un `::warning::` y omite el
+   despliegue: así un push no genera correos de error mientras se configura la cuenta.
+3. **Empaqueta** el juego (`index.html`, `juego/`, `js/`, `game.js`, `docs/` → `dist/`) y valida
+   que los tres archivos clave existen.
+4. **Instala Butler** desde `broth.itch.zone` (v15.x) y ejecuta
+   `butler push dist usuario/juego:web --userversion <sha>`, con `BUTLER_API_KEY` como variable
+   de entorno. Los Secrets se pasan por `env`, no interpolados en el `run`.
+5. **Recuerda** que el canal `web` debe marcarse a mano como *HTML5 / Playable in browser* en itch.io.
+
+> **Por qué no se usa la acción del marketplace:** `josephbmanley/butler-publish-itchio-action@v1.0.3`
+> construye un Docker que descarga Butler desde `broth.itch.ovh`, un dominio que ya no resuelve
+> (`curl: (6) Could not resolve host`). Instalar Butler directamente evita esa dependencia rota.
 
 ### Secrets necesarios (configurar una sola vez en GitHub)
 
