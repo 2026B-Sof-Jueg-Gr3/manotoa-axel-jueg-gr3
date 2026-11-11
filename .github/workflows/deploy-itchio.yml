@@ -32,25 +32,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 2. Empaquetar el juego en un ZIP
-      #    Incluye index.html, game.js, js/ y todo lo necesario para correr.
-      #    El juego de Phaser vive en la raíz + subcarpeta juego/.
+      # 2. Empaquetar el juego
+      #    Incluye index.html, game.js, js/, docs/ y juego/ para que funcione
+      #    tanto la landing page como el canvas de Phaser.
       - name: Pack game files
         run: |
           mkdir -p dist
-          cp -r index.html juego js game.js dist/
-          cd dist && zip -r ../neon-breaker-web.zip . && cd ..
-          ls -lh neon-breaker-web.zip
+          cp -r index.html juego js game.js docs dist/
+          ls -R dist
 
-      # 3. Subir a Itch.io con Butler
-      #    Usa la acción comunitaria josephbmanley/butler-publish-itchio-action
-      - name: Publish to Itch.io
-        uses: josephbmanley/butler-publish-itchio-action@v1.0.3
+      # 3. Instalar Butler directamente desde el mirror oficial actual
+      #    (la acción comunitaria josephbmanley/butler-publish-itchio-action@v1.0.3
+      #    está rota porque apunta al dominio antiguo broth.itch.ovh).
+      - name: Install Butler
+        run: |
+          curl -L -o butler.zip https://broth.itch.zone/butler/linux-amd64/LATEST/archive/default
+          unzip butler.zip
+          chmod +x butler
+          sudo mv butler /usr/local/bin/butler
+          butler --version
+
+      # 4. Iniciar sesión y subir a Itch.io
+      - name: Push to Itch.io
         env:
-          BUTLER_CREDENTIALS: ${{ secrets.ITCHIO_API_KEY }}
-        with:
-          itch_channel: web
-          itch_game: ${{ secrets.ITCHIO_GAME }}
-          itch_user: ${{ secrets.ITCHIO_USERNAME }}
-          package_dir: dist
-          version: ${{ github.sha }}
+          BUTLER_API_KEY: ${{ secrets.ITCHIO_API_KEY }}
+        run: |
+          butler push dist ${{ secrets.ITCHIO_USERNAME }}/${{ secrets.ITCHIO_GAME }}:web --userversion "${{ github.sha }}"

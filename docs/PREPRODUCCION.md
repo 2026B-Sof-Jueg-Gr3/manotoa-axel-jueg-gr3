@@ -96,8 +96,10 @@ y el juego sea el destino del botón.
    vendes).
 3. **Comunidad indie activa:** Es la plataforma de referencia para game jams y proyectos
    estudiantiles.
-4. **CI/CD oficial:** Butler (la CLI de Itch.io) tiene una acción de GitHub Actions mantenida por
-   la comunidad (`josephbmanley/butler-publish-itchio-action`), que es justo la que pide el taller.
+4. **CI/CD oficial:** Butler (la CLI de Itch.io) se puede ejecutar directamente en GitHub Actions.
+   Se usa `broth.itch.zone` para descargar Butler (la acción comunitaria
+   `josephbmanley/butler-publish-itchio-action` está rota porque apunta al dominio antiguo
+   `broth.itch.ovh`).
 
 ### Configuración
 
@@ -115,9 +117,9 @@ y el juego sea el destino del botón.
 El workflow se activa en cada **push a `main`** y hace lo siguiente:
 
 1. **Checkout** del repositorio con `actions/checkout@v4`.
-2. **Empaqueta** el juego en un ZIP (`index.html`, `juego/`, `js/`, `game.js` → `dist/`).
-3. **Sube a Itch.io** con `josephbmanley/butler-publish-itchio-action@v1.0.3`, usando el API key
-   guardado en los **Secrets** del repositorio.
+2. **Empaqueta** el juego (`index.html`, `juego/`, `js/`, `game.js`, `docs/` → `dist/`).
+3. **Instala Butler** desde `broth.itch.zone` y lo ejecuta con `butler push dist ...:web`,
+   usando el API key guardado en los **Secrets** del repositorio.
 
 ### Secrets necesarios (configurar una sola vez en GitHub)
 

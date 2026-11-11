@@ -33,8 +33,10 @@ Licencia: MIT · Assets procedimentales CC0.
 1. **Landing page** (`index.html` en la raíz): terminal neón con estrellas animadas, scanlines,
    ladrillos que pulsan, logline, características, sección legal, muro de honor y botón JUGAR.
 2. **Juego** (`juego/index.html`): el mismo Neón Breaker de Phaser 3, ahora en subcarpeta.
-3. **CI/CD** (`.github/workflows/deploy-itchio.yml`): workflow que empaqueta el juego y lo sube
-   a Itch.io en cada push a main.
+3. **CI/CD** (`.github/workflows/deploy-itchio.yml`): workflow que empaqueta el juego, instala
+   Butler desde `broth.itch.zone` y lo sube a Itch.io en cada push a main.
+   Se evita la acción comunitaria rota `josephbmanley/butler-publish-itchio-action@v1.0.3`
+   (usa el dominio muerto `broth.itch.ovh`).
 
 ## Lo que falta (requiere tu cuenta de Itch.io)
 
@@ -83,7 +85,8 @@ En ~2 minutos, el juego estará actualizado en Itch.io.
 
 | Problema | Solución |
 |---|---|
-| El workflow da error de autenticación | El API key es incorrecta o expiró; regenerarla en itch.io |
+| El workflow falla en "Install Butler" con `Could not resolve host: broth.itch.ovh` | Eso es la acción rota; el workflow actual ya usa `broth.itch.zone`. Asegúrate de tener el último `deploy-itchio.yml`. |
+| El workflow falla en "Push to Itch.io" | Los Secrets no están configurados o el proyecto en Itch.io no existe todavía. |
 | Butler dice "game not found" | El slug `ITCHIO_GAME` no coincide con el de itch.io (revisa la URL) |
 | La landing page da 404 | Pages sirve desde `main` / `/(root)`; el `index.html` debe estar en la raíz |
 | El juego no carga desde la landing | Verifica que `juego/index.html` existe y los scripts tienen `../` como prefijo |
