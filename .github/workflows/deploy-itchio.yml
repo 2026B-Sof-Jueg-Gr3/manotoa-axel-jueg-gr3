@@ -1,0 +1,56 @@
+# ============================================================
+#  CI/CD — Despliegue automático a Itch.io
+#  ------------------------------------------------------------
+#  Cada push a main empaqueta el juego y lo sube a Itch.io
+#  usando Butler (la CLI oficial de itch.io).
+#
+#  Requisitos (configurar una sola vez):
+#    1. Crear cuenta en https://itch.io y el proyecto del juego
+#    2. Settings > API keys > generar una nueva key
+#    3. En GitHub: Settings > Secrets and variables > Actions
+#       - ITCHIO_API_KEY  = la key generada
+#       - ITCHIO_USERNAME = tu usuario de itch.io (ej: axel-manotoa)
+#       - ITCHIO_GAME     = slug del juego (ej: neon-breaker)
+#
+#  Después de eso, cada git push a main publica el juego solo.
+# ============================================================
+
+name: Deploy to Itch.io
+
+on:
+  push:
+    branches: [main]
+
+  # Permite dispararlo manualmente desde la pestaña Actions
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Clonar el repositorio
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. Empaquetar el juego en un ZIP
+      #    Incluye index.html, game.js, js/ y todo lo necesario para correr.
+      #    El juego de Phaser vive en la raíz + subcarpeta juego/.
+      - name: Pack game files
+        run: |
+          mkdir -p dist
+          cp -r index.html juego js game.js dist/
+          cd dist && zip -r ../neon-breaker-web.zip . && cd ..
+          ls -lh neon-breaker-web.zip
+
+      # 3. Subir a Itch.io con Butler
+      #    Usa la acción comunitaria josephbmanley/butler-publish-itchio-action
+      - name: Publish to Itch.io
+        uses: josephbmanley/butler-publish-itchio-action@v1.0.3
+        env:
+          BUTLER_CREDENTIALS: ${{ secrets.ITCHIO_API_KEY }}
+        with:
+          itch_channel: web
+          itch_game: ${{ secrets.ITCHIO_GAME }}
+          itch_user: ${{ secrets.ITCHIO_USERNAME }}
+          package_dir: dist
+          version: ${{ github.sha }}

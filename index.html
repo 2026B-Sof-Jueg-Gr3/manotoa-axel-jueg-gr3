@@ -3,37 +3,605 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Neón Breaker — Axel Manotoa</title>
+  <title>NEON BREAKER — Axel Manotoa</title>
+  <meta name="description" content="Un rompe-ladrillos neón hecho con Phaser 3. Tres niveles, power-ups, combo y récord.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230a0e17'/><rect x='16' y='24' width='28' height='12' rx='3' fill='%23ff4d6d'/><rect x='50' y='24' width='28' height='12' rx='3' fill='%2338bdf8'/><circle cx='50' cy='72' r='8' fill='%23fff'/></svg>">
   <style>
-    html, body { margin: 0; height: 100%; background: #05070d; overflow: hidden; }
-    #juego { position: absolute; inset: 0; }
-    canvas { display: block; }
+    :root {
+      --bg: #05070d;
+      --panel: #0a0e17;
+      --cyan: #38bdf8;
+      --pink: #ff4d6d;
+      --green: #4ade80;
+      --yellow: #ffd93d;
+      --purple: #a78bfa;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --border: #1e293b;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ---- Background starfield ---- */
+    .stars {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(2px 2px at 20% 30%, rgba(56,189,248,.5), transparent),
+        radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,.4), transparent),
+        radial-gradient(1.5px 1.5px at 80% 20%, rgba(167,139,250,.4), transparent),
+        radial-gradient(1px 1px at 40% 80%, rgba(74,222,128,.3), transparent),
+        radial-gradient(2px 2px at 90% 50%, rgba(255,217,61,.3), transparent),
+        radial-gradient(1px 1px at 15% 60%, rgba(255,255,255,.3), transparent),
+        radial-gradient(1.5px 1.5px at 70% 40%, rgba(56,189,248,.3), transparent);
+      background-size: 200% 200%;
+      animation: drift 60s linear infinite;
+    }
+
+    @keyframes drift {
+      0% { background-position: 0 0; }
+      100% { background-position: 200% 200%; }
+    }
+
+    /* ---- Scanline overlay ---- */
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0,0,0,0) 0px,
+        rgba(0,0,0,0) 2px,
+        rgba(56,189,248,.015) 3px,
+        rgba(0,0,0,0) 4px
+      );
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ---- Hero ---- */
+    .hero {
+      text-align: center;
+      padding: 80px 0 60px;
+    }
+
+    .hero .brick-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 36px;
+      flex-wrap: wrap;
+    }
+
+    .hero .brick {
+      width: 72px;
+      height: 22px;
+      border-radius: 5px;
+      opacity: .9;
+      animation: brick-glow 3s ease-in-out infinite;
+    }
+
+    .hero .brick:nth-child(1) { background: var(--pink);   animation-delay: 0s; }
+    .hero .brick:nth-child(2) { background: var(--yellow); animation-delay: .15s; }
+    .hero .brick:nth-child(3) { background: var(--green);  animation-delay: .3s; }
+    .hero .brick:nth-child(4) { background: var(--cyan);   animation-delay: .45s; }
+    .hero .brick:nth-child(5) { background: var(--purple); animation-delay: .6s; }
+    .hero .brick:nth-child(6) { background: var(--pink);   animation-delay: .75s; }
+
+    @keyframes brick-glow {
+      0%, 100% { box-shadow: 0 0 8px currentColor; filter: brightness(1); }
+      50% { box-shadow: 0 0 20px currentColor; filter: brightness(1.25); }
+    }
+
+    .hero h1 {
+      font-size: clamp(40px, 8vw, 72px);
+      font-weight: 800;
+      letter-spacing: .04em;
+      color: var(--text);
+      text-shadow:
+        0 0 20px rgba(56,189,248,.6),
+        0 0 40px rgba(56,189,248,.3);
+      margin-bottom: 12px;
+    }
+
+    .hero .tagline {
+      font-size: 14px;
+      letter-spacing: .2em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+
+    .hero .logline {
+      font-size: 18px;
+      line-height: 1.6;
+      color: #94a3b8;
+      max-width: 640px;
+      margin: 0 auto 40px;
+      font-style: italic;
+    }
+
+    .hero .logline strong {
+      color: var(--cyan);
+      font-style: normal;
+    }
+
+    /* ---- Play button ---- */
+    .btn-play {
+      display: inline-block;
+      padding: 18px 56px;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-decoration: none;
+      color: var(--bg);
+      background: var(--cyan);
+      border-radius: 8px;
+      text-transform: uppercase;
+      transition: all .25s ease;
+      box-shadow: 0 0 30px rgba(56,189,248,.4), 0 0 60px rgba(56,189,248,.2);
+      cursor: pointer;
+      border: 2px solid var(--cyan);
+    }
+
+    .btn-play:hover {
+      transform: translateY(-3px) scale(1.04);
+      box-shadow: 0 0 40px rgba(56,189,248,.7), 0 0 80px rgba(56,189,248,.35);
+      background: #7dd3fc;
+      border-color: #7dd3fc;
+    }
+
+    .btn-play:active {
+      transform: translateY(0) scale(1);
+    }
+
+    .hero .hint {
+      margin-top: 18px;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: .1em;
+    }
+
+    /* ---- Sections ---- */
+    section {
+      padding: 48px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    section h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    section h2 .icon {
+      font-size: 24px;
+    }
+
+    section h2 .label {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      font-weight: 400;
+    }
+
+    section .intro {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 28px;
+    }
+
+    /* ---- Features grid ---- */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .feature {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      transition: border-color .2s ease;
+    }
+
+    .feature:hover {
+      border-color: var(--cyan);
+    }
+
+    .feature .ico {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .feature h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .feature p {
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    /* ---- Legal ---- */
+    .legal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 640px) {
+      .legal-grid { grid-template-columns: 1fr; }
+    }
+
+    .legal-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+    }
+
+    .legal-card h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .legal-card .rating {
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: 4px;
+      font-weight: 800;
+      font-size: 20px;
+      letter-spacing: .05em;
+      margin-bottom: 10px;
+    }
+
+    .rating-e { background: var(--green); color: var(--bg); }
+
+    .legal-card p, .legal-card li {
+      font-size: 13px;
+      line-height: 1.6;
+      color: #94a3b8;
+    }
+
+    .legal-card ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .legal-card ul li {
+      padding: 4px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .legal-card ul li:last-child { border-bottom: none; }
+
+    .legal-card ul li .asset { color: var(--text); font-weight: 500; }
+    .legal-card ul li .license { color: var(--cyan); font-size: 12px; }
+
+    /* ---- Platform ---- */
+    .platform-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .platform-card .logo {
+      font-size: 36px;
+    }
+
+    .platform-card .info h3 {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .platform-card .info p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .platform-card .info a {
+      color: var(--cyan);
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    .platform-card .info a:hover {
+      text-decoration: underline;
+    }
+
+    /* ---- CI/CD badge ---- */
+    .ci-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--green);
+      margin-top: 16px;
+    }
+
+    .ci-badge .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+    }
+
+    /* ---- Footer ---- */
     footer {
-      position: fixed; bottom: 8px; right: 14px; z-index: 10;
-      font: 11px/1 "Segoe UI", system-ui, sans-serif;
-      color: #334155; letter-spacing: .12em;
+      text-align: center;
+      padding: 40px 0 32px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: .1em;
+    }
+
+    footer a {
+      color: var(--cyan);
+      text-decoration: none;
+    }
+
+    footer a:hover { text-decoration: underline; }
+
+    /* ---- Animated ball ---- */
+    .ball {
+      position: fixed;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 12px var(--cyan);
+      z-index: 0;
+      pointer-events: none;
+      animation: ball-bounce 8s linear infinite;
+    }
+
+    @keyframes ball-bounce {
+      0%   { top: 100%; left: 10%; }
+      25%  { top: 20%;  left: 30%; }
+      50%  { top: 50%;  left: 70%; }
+      75%  { top: 15%;  left: 85%; }
+      100% { top: 100%; left: 10%; }
     }
   </style>
 </head>
 <body>
-  <div id="juego"></div>
-  <footer>AXEL MANOTOA · ISWD823</footer>
+  <div class="stars"></div>
+  <div class="scanlines"></div>
+  <div class="ball"></div>
 
-  <!-- Paso 3 del taller: Phaser por CDN, sin build y sin node_modules -->
-  <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
+  <!-- ===================== HERO ===================== -->
+  <div class="container">
+    <div class="hero">
+      <div class="brick-row">
+        <div class="brick" style="color:var(--pink)"></div>
+        <div class="brick" style="color:var(--yellow)"></div>
+        <div class="brick" style="color:var(--green)"></div>
+        <div class="brick" style="color:var(--cyan)"></div>
+        <div class="brick" style="color:var(--purple)"></div>
+        <div class="brick" style="color:var(--pink)"></div>
+      </div>
 
-  <!-- Orden de carga: utilidades -> datos -> texturas -> escenas -> arranque -->
-  <script src="js/util.js"></script>
-  <script src="js/niveles.js"></script>
-  <script src="js/texturas.js"></script>
-  <script src="js/escenas/BootScene.js"></script>
-  <script src="js/escenas/PreloaderScene.js"></script>
-  <script src="js/escenas/MenuScene.js"></script>
-  <script src="js/escenas/JuegoScene.js"></script>
-  <script src="js/escenas/FinScene.js"></script>
+      <h1>NEON BREAKER</h1>
+      <div class="tagline">Rompe-Todos &middot; Phaser 3 &middot; GitHub Pages</div>
 
-  <!-- Paso 4 del taller: configuración del juego -->
-  <script src="game.js"></script>
+      <p class="logline">
+        En un futuro donde la ciudad neón ha perdido su color, una <strong>esfera de energía cuántica</strong>
+        debe destruir todos los bloques de energía estancada para restaurar el brillo de la metrópolis.
+        Cada ladrillo roto libera color; cada combo, acelera la reconstrucción.
+        <strong>¿Podrás limpiar tres sectores antes de que se agote tu energía?</strong>
+      </p>
+
+      <a href="juego/index.html" class="btn-play">JUGAR</a>
+      <div class="hint">Sin descargas &middot; Corre en tu navegador &middot; Mejor con teclado</div>
+    </div>
+
+    <!-- ===================== MISIÓN 1: ALMA ===================== -->
+    <section id="alma">
+      <h2><span class="icon">&#10024;</span> El Alma del Juego <span class="label">Misión 1</span></h2>
+      <p class="intro">Narrativa, propósito y resonancia ludonarrativa.</p>
+
+      <div class="features">
+        <div class="feature">
+          <div class="ico">&#127918;</div>
+          <h3>Logline</h3>
+          <p>Una esfera cuántica debe destruir bloques de energía estancada para devolverle el color a una ciudad neón apagada. Cada ladrillo roto es un píxel de luz recuperado.</p>
+        </div>
+        <div class="feature">
+          <div class="ico">&#128260;</div>
+          <h3>Resonancia Ludonarrativa</h3>
+          <p>La mecánica —romper bloques— <em>es</em> la narrativa: el jugador restaura el color de la ciudad literalmente, ladrillo a ladrillo. El combo representa la inercia de la reconstrucción: a más bloques seguidos, más rápido se recupera el brillo.</p>
+        </div>
+        <div class="feature">
+          <div class="ico">&#128218;</div>
+          <h3>Valor Educativo</h3>
+          <p>Diseñado para enseñar física arcade, colisiones, sistemas de partículas y arquitectura de escenas en Phaser 3. El código es legible y comentado para que cualquier estudiante pueda entenderlo y modificarlo.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== MISIÓN 2: LEGAL ===================== -->
+    <section id="legal">
+      <h2><span class="icon">&#9878;</span> Las Reglas del Mundo Real <span class="label">Misión 2</span></h2>
+      <p class="intro">Marco legal y ético del juego.</p>
+
+      <div class="legal-grid">
+        <div class="legal-card">
+          <h3>Clasificación Creativa (PEGI / ESRB)</h3>
+          <div class="rating rating-e">E</div>
+          <p>
+            <strong>Clasificación E (Everyone):</strong> Apto para cualquier humano con pulso y un navegador.
+            Contiene violencia mínima dirigida exclusivamente a <em>bloques de energía inanimados</em>
+            que se desintegran en partículas de colores al ser impactados por una esfera cuántica.
+            No hay sangre, no hay personajes, no hay diálogo ofensivo. Los bloques no sienten dolor
+            (lo dice su licencia de software).
+          </p>
+        </div>
+
+        <div class="legal-card">
+          <h3>Muro de Honor</h3>
+          <p>Créditos a los creadores del arte y sonido <em>gratuito</em> usado en este proyecto:</p>
+          <ul>
+            <li>
+              <span class="asset">Texturas (ladrillos, bola, paleta, power-ups)</span>
+              <span class="license">CC0 &middot; Generadas proceduralmente con Phaser Graphics</span>
+            </li>
+            <li>
+              <span class="asset">Fondo estrellado y halo radial</span>
+              <span class="license">CC0 &middot; Canvas API + tileSprite</span>
+            </li>
+            <li>
+              <span class="asset">Efectos de sonido (rebote, combo, power-up)</span>
+              <span class="license">CC0 &middot; Web Audio API (osciladores programáticos)</span>
+            </li>
+            <li>
+              <span class="asset">Motor de juego: Phaser 3.90</span>
+              <span class="license">MIT &middot; photonstorm.github.io</span>
+            </li>
+            <li>
+              <span class="asset">Fuente del sistema (Segoe UI / system-ui)</span>
+              <span class="license">Propietaria del SO &middot; uso legítimo</span>
+            </li>
+          </ul>
+          <p style="margin-top:12px">
+            Todo el código del proyecto está bajo licencia <strong>MIT</strong> y es de libre uso
+            educativo. Si lo usas, menciona al autor.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== MISIÓN 3: ESCAPARATE ===================== -->
+    <section id="escaparate">
+      <h2><span class="icon">&#127749;</span> El Escaparate Digital <span class="label">Misión 3</span></h2>
+      <p class="intro">Esta página <em>es</em> el escaparate. Una terminal neón que invita a entrar.</p>
+
+      <div class="features">
+        <div class="feature">
+          <div class="ico">&#9654;</div>
+          <h3>Botón JUGAR</h3>
+          <p>El botón gigante de arriba lleva directo al canvas de Phaser en <code>juego/index.html</code>. Sin esperas, sin descargas: clic y ya estás jugando.</p>
+        </div>
+        <div class="feature">
+          <div class="ico">&#127760;</div>
+          <h3>GitHub Pages</h3>
+          <p>Desplegado en <a href="https://2026b-sof-jueg-gr3.github.io/manotoa-axel-jueg-gr3/" style="color:var(--cyan);text-decoration:none">GitHub Pages</a> desde la raíz de <code>main</code>. La landing sirve como menú de inicio; el juego vive en una subcarpeta.</p>
+        </div>
+        <div class="feature">
+          <div class="ico">&#128187;</div>
+          <h3>Diseño Retro-Neón</h3>
+          <p>Paleta oscura con acentos cian y rosa, scanlines sutiles, campo de estrellas animado y una bola de energía que rebota por la pantalla. La vibra del juego empieza antes de hacer clic.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== MISIÓN 4: HOGAR INDIE ===================== -->
+    <section id="indie">
+      <h2><span class="icon">&#128640;</span> Eligiendo su Hogar Indie <span class="label">Misión 4</span></h2>
+      <p class="intro">¿Dónde vive la comunidad del juego? Elegimos Itch.io.</p>
+
+      <div class="platform-card">
+        <div class="logo">&#127859;</div>
+        <div class="info">
+          <h3>Itch.io — El paraíso indie y HTML5</h3>
+          <p>
+            Itch.io es la plataforma ideal para juegos HTML5 como Neón Breaker: soporta subida directa
+            de archivos web jugables en el navegador, es gratuita y tiene la comunidad indie más activa.
+            El juego se puede jugar sin salir de la plataforma.
+          </p>
+          <p style="margin-top:8px">
+            <a href="https://axel-manotoa.itch.io/neon-breaker" target="_blank" rel="noopener">itch.io/axel-manotoa/neon-breaker &rarr;</a>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== MISIÓN LEGENDARIA: CI/CD ===================== -->
+    <section id="cicd">
+      <h2><span class="icon">&#129302;</span> Automatización Total (CI/CD) <span class="label">Misión Legendaria</span></h2>
+      <p class="intro">GitHub Actions + Butler = cada push a <code>main</code> publica el juego en Itch.io automáticamente.</p>
+
+      <div class="features">
+        <div class="feature">
+          <div class="ico">&#128279;</div>
+          <h3>GitHub Actions</h3>
+          <p>Workflow en <code>.github/workflows/deploy-itchio.yml</code>. Se activa en cada push a <code>main</code>, empaqueta el juego y lo sube con Butler.</p>
+        </div>
+        <div class="feature">
+          <div class="ico">&#128274;</div>
+          <h3>Secrets</h3>
+          <p>El API Key de Itch.io se guarda en <em>Settings &rarr; Secrets and variables &rarr; Actions</em> como <code>ITCHIO_API_KEY</code>. Nunca aparece en el código.</p>
+        </div>
+        <div class="feature">
+          <div class="ico">&#9889;</div>
+          <h3>Butler CLI</h3>
+          <p>La herramienta oficial de Itch.io para subir juegos desde la terminal. Se ejecuta dentro del workflow sin instalación local.</p>
+        </div>
+      </div>
+
+      <div class="ci-badge">
+        <span class="dot"></span>
+        CI/CD activo &middot; Cada commit &rarr; publicado en ~2 minutos
+      </div>
+    </section>
+
+    <!-- ===================== FOOTER ===================== -->
+    <footer>
+      <p>
+        <strong>AXEL MANOTOA</strong> &middot; ISWD823 &middot; 2026-B<br>
+        <a href="https://github.com/2026B-Sof-Jueg-Gr3/manotoa-axel-jueg-gr3">Código fuente</a>
+        &middot;
+        <a href="https://2026b-sof-jueg-gr3.github.io/manotoa-axel-jueg-gr3/">GitHub Pages</a>
+        &middot;
+        <a href="https://axel-manotoa.itch.io/neon-breaker">Itch.io</a>
+      </p>
+      <p style="margin-top:8px;opacity:.6">
+        Hecho con Phaser 3 &middot; Sin assets externos &middot; MIT License
+      </p>
+    </footer>
+  </div>
 </body>
 </html>
