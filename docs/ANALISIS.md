@@ -38,12 +38,12 @@ aprovecha:
 |---|---|
 | Protagonista, meta, acciones y respuesta | Paleta + bola (protagonista), limpiar el tablero (meta), mover/lanzar (acciones), rebotes y chispas (respuesta) |
 | Ciclo de juego: mirar → decidir → mover → evaluar | Ver dónde viene la bola, decidir el ángulo, mover la paleta, evaluar si el rebote salió como querías |
-| Arquitectura de escenas (Boot → Preloader → Menú → Juego → Meta) | Las mismas cinco, con la última renombrada `Fin` |
+| Arquitectura de escenas (Boot → Preloader → Menú → Juego → Meta) | Seis escenas: se añadió `Interludio` (el giro) y la última se llama `Fin` |
 | Assets procedimentales en el Preloader | `crearTexturas()` genera todo con `Graphics` |
 | Mundo vs. pantalla y cámara | Aquí el tablero **cabe entero** en 800×600, así que la cámara no sigue a nadie: se usa `shake` para dar impacto |
 | HUD estático sobre el juego | Marcador, nivel y vidas en la franja superior, siempre visibles |
 | Reglas simples y una sola métrica | Solo se pierde por dejar caer la bola; la métrica es el puntaje |
-| Victoria sin combate | Limpiar los 3 niveles |
+| Victoria sin combate | Limpiar los 3 sectores lleva al Interludio; la victoria real llega al **no romper** el Último Fotón |
 | «Fricción cero hacia la revancha» | Un clic y se vuelve a jugar, sin pasar por el menú |
 
 ---
@@ -87,7 +87,7 @@ puntaje y estados de partida.
 |---|---|
 | 800 × 600 | Es la medida del ejemplo del taller y la ideal para un tablero vertical |
 | Phaser 3.90 por CDN | Cumple el paso 3 y funciona en Pages sin compilar |
-| 5 escenas en archivos separados | Arquitectura de la presentación, sin bundler |
+| Escenas en archivos separados | 6 escenas, arquitectura de la presentación, sin bundler |
 | Assets procedurales | 0 descargas, 0 CORS, peso mínimo |
 | Rebote con ángulo por punto de impacto | Es lo que hace que el juego se sienta «de verdad» |
 | Física manual en la paleta (no `collider` puro) | Para que el rebote no dependa de la geometría sino de dónde golpea |

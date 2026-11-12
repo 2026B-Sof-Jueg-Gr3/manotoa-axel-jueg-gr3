@@ -89,6 +89,33 @@ function crearTexturas(scene) {
   g.generateTexture('pw_vida', 26, 26);
   g.clear();
 
+  /* ---------- Eco de Memoria (30 x 30) ----------
+     Un rombo con anillo: no se rompe, se "escucha". */
+  g.lineStyle(2, 0xffffff, 0.95);
+  g.strokeCircle(15, 15, 12);
+  g.lineStyle(1, 0xffffff, 0.5);
+  g.strokeCircle(15, 15, 8);
+  g.fillStyle(0xffffff, 1);
+  g.fillTriangle(15, 6, 22, 15, 8, 15);
+  g.fillTriangle(15, 24, 22, 15, 8, 15);
+  g.generateTexture('eco', 30, 30);
+  g.clear();
+
+  /* ---------- El Último Fotón (88 x 88) ----------
+     Bloque dorado con un núcleo claro. No usa setTint. */
+  g.fillStyle(0x7c5a12, 1);
+  g.fillRoundedRect(0, 0, 88, 88, 14);
+  g.fillStyle(0xffd93d, 1);
+  g.fillRoundedRect(5, 5, 78, 78, 11);
+  g.fillStyle(0xfff3b0, 1);
+  g.fillCircle(44, 44, 24);
+  g.fillStyle(0xffffff, 1);
+  g.fillCircle(44, 44, 12);
+  g.lineStyle(2, 0xffd93d, 0.55);
+  g.strokeCircle(44, 44, 34);
+  g.generateTexture('foton', 88, 88);
+  g.clear();
+
   /* ---------- Halo radial (256 x 256) ----------
      Graphics no hace degradados, así que este se dibuja en un canvas
      y se registra como textura. Sirve para el brillo de los títulos. */

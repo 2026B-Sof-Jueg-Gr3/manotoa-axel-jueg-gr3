@@ -9,28 +9,24 @@
     html, body { margin: 0; height: 100%; background: #05070d; overflow: hidden; }
     #juego { position: absolute; inset: 0; }
     canvas { display: block; }
-    footer {
-      position: fixed; bottom: 8px; right: 14px; z-index: 10;
-      font: 11px/1 "Segoe UI", system-ui, sans-serif;
-      color: #334155; letter-spacing: .12em;
-    }
   </style>
 </head>
 <body>
   <div id="juego"></div>
-  <footer>AXEL MANOTOA · ISWD823</footer>
 
   <!-- Paso 3 del taller: Phaser por CDN, sin build y sin node_modules -->
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
 
-  <!-- Orden de carga: utilidades -> datos -> texturas -> escenas -> arranque -->
+  <!-- Orden de carga: utilidades -> historia -> datos -> texturas -> escenas -> arranque -->
   <script src="../js/util.js"></script>
+  <script src="../js/historia.js"></script>
   <script src="../js/niveles.js"></script>
   <script src="../js/texturas.js"></script>
   <script src="../js/escenas/BootScene.js"></script>
   <script src="../js/escenas/PreloaderScene.js"></script>
   <script src="../js/escenas/MenuScene.js"></script>
   <script src="../js/escenas/JuegoScene.js"></script>
+  <script src="../js/escenas/InterludioScene.js"></script>
   <script src="../js/escenas/FinScene.js"></script>
 
   <!-- Paso 4 del taller: configuración del juego -->

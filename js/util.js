@@ -9,6 +9,12 @@ function formatearPuntos(n) {
   return n.toLocaleString('es-PE');
 }
 
+/** Segundos -> "03:42" */
+function formatearTiempo(segundos) {
+  const s = Math.max(0, Math.floor(segundos));
+  return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+}
+
 const CLAVE_RECORD = 'neonbreaker:record';
 
 function leerRecord() {

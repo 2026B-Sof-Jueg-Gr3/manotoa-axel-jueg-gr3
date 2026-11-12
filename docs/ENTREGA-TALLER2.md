@@ -11,17 +11,22 @@ Plataforma Indie (Itch.io): https://axel112004.itch.io/neon-breaker
 CI/CD configurado con GitHub Actions + Butler:
 Archivo YAML: .github/workflows/deploy-itchio.yml
 
-Logline: En un futuro donde la ciudad neón ha perdido su color, una esfera de energía cuántica
-debe destruir todos los bloques de energía estancada para restaurar el brillo de la metrópolis.
+Logline: LUMEN, el último fotón de una ciudad que olvidó su color, rompe los bloques del Apagón
+para devolverle la luz — sin saber que cada bloque es un recuerdo suyo, y que el último que quede
+en pie decidirá si la ciudad vuelve a brillar o vuelve a recordar.
+
+La narrativa se juega: 3 Leyes de la Luz como Ecos de Memoria, Pulso de Resonancia, un Interludio
+con giro, una cámara final con dos finales y un truco secreto que entrega el Sello del Último Fotón.
 
 Clasificación: E (Everyone) — violencia mínima contra bloques inanimados.
-Licencia: MIT · Assets procedimentales CC0.
+Licencia: MIT · Assets procedimentales CC0 · Datos solo en localStorage, sin servidor ni analytics.
 ```
 
 ## Checklist
 
-- [x] **Misión 1:** Logline creativo + resonancia ludonarrativa (en la landing page y en `docs/PREPRODUCCION.md`).
-- [x] **Misión 2:** Clasificación creativa E + Muro de Honor con licencias (en la landing page).
+- [x] **Misión 1:** Logline + **Lore** (3 Leyes) + **Resonancia** (aprender = recordar) + **Identidad** (romper = borrar un nombre), todo implementado dentro del juego, no solo en la web. Ver `docs/PREPRODUCCION.md`.
+- [x] **Misión 1 extra:** giro narrativo (Interludio), truco secreto, dos finales, Sello persistente y Código de Luz.
+- [x] **Misión 2:** Clasificación creativa E + justificación de intensidad visual + Muro de Honor con licencias + **declaración de privacidad de datos locales**.
 - [x] **Misión 3:** Landing page inmersiva en `index.html` (raíz del repo) con botón JUGAR que lleva a `juego/index.html`.
 - [x] **Misión 3:** Desplegada en GitHub Pages desde `main` / `/(root)`.
 - [ ] **Misión 4:** Crear cuenta en Itch.io y subir el juego (requiere tu acción manual o configurar los Secrets).
@@ -31,8 +36,12 @@ Licencia: MIT · Assets procedimentales CC0.
 ## Lo que ya está hecho
 
 1. **Landing page** (`index.html` en la raíz): terminal neón con estrellas animadas, scanlines,
-   ladrillos que pulsan, logline, características, sección legal, muro de honor y botón JUGAR.
-2. **Juego** (`juego/index.html`): el mismo Neón Breaker de Phaser 3, ahora en subcarpeta.
+   ladrillos que pulsan, logline, las cuatro piezas de la FASE 1, sección legal con muro de honor
+   y declaración de privacidad, y botón JUGAR.
+2. **Juego** (`juego/index.html`): Neón Breaker *El Último Fotón*, versión narrativa completa —
+   6 escenas, 3 Leyes como Ecos de Memoria, Pulso de Resonancia, Interludio con giro, Núcleo con
+   dos finales, truco secreto, Sello persistente y Código de Luz. La landing ya no promete nada que
+   el juego no haga.
 3. **CI/CD** (`.github/workflows/deploy-itchio.yml`): workflow que empaqueta el juego, instala
    Butler desde `broth.itch.zone` y lo sube a Itch.io en cada push a main.
    Se evita la acción comunitaria rota `josephbmanley/butler-publish-itchio-action@v1.0.3`
@@ -50,7 +59,7 @@ Valores exactos para cada campo del formulario:
 |---|---|
 | **Title** | `Neon Breaker` |
 | **Project URL** | `https://axel112004.itch.io/neon-breaker` (ya aparece así, déjalo) |
-| **Short description or tagline** | `Una esfera cuántica debe devolverle el color a la ciudad neón.` |
+| **Short description or tagline** | `El último fotón de una ciudad que olvidó su color.` |
 | **Classification** | `Games – A piece of software you can play` ✅ |
 | **Kind of project** | `HTML – You have a ZIP or HTML file that will be played in the browser` ✅ |
 | **Release status** | `Released – Project is complete, but might receive some updates` ✅ |
@@ -60,7 +69,7 @@ Valores exactos para cada campo del formulario:
 | **Upload / files** | sube **`neon-breaker-itchio.zip`** (310 KB). Trae `index.html` en la raíz y Phaser incluido |
 | **Embed options** | **Manually set size** → ancho `800` × alto `600` (la medida real del juego) |
 | **Frame options** | ✅ `Fullscreen button` · ✅ `Mobile friendly` · ❌ el resto (scrollbars, auto-start, SharedArrayBuffer) |
-| **Description** | pega el contenido de `descripcion-itchio.html` |
+| **Description** | pega el contenido de `docs/DESCRIPCION-ITCHIO.html` |
 | **Genre** | `Arcade` |
 | **Tags** | `breakout`, `arkanoid`, `phaser`, `neon`, `retro`, `combo`, `powerups`, `student-project` |
 | **AI generation disclosure** | **Yes** (el código y los textos se escribieron con asistencia de un LLM; el arte y el sonido son procedurales) |

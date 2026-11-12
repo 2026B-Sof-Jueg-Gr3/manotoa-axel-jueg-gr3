@@ -13,32 +13,87 @@ atrevidos, automatizar el despliegue.
 
 ---
 
-## Misión 1: El Alma del Juego (Narrativa y Propósito)
+## Misión 1: El Alma del Juego (FASE 1 — Ingeniería del Propósito)
+
+La diapositiva 3 del material exige cuatro cosas. Las cuatro están **dentro del juego**, no solo en
+la landing page:
+
+| Exigencia | Implementación real |
+|---|---|
+| **Logline** — premisa de impacto | `HISTORIA.logline` (`js/historia.js`). Se muestra en la landing y estructura el arco completo. |
+| **Lore** — reglas del universo lúdico | 3 Leyes de la Luz, entregadas como **Ecos de Memoria** ocultos, uno por sector. |
+| **Resonancia** — mecánica que justifica el aprendizaje | El rebote con ángulo *es* la lección de reflexión; aprender = recordar = encender la ciudad. |
+| **Identidad** — fusión de historia lúdica | Romper un bloque borra un nombre. La historia y la mecánica son el mismo acto. |
 
 ### Logline
 
-> En un futuro donde la ciudad neón ha perdido su color, una esfera de energía cuántica debe
-> destruir todos los bloques de energía estancada para restaurar el brillo de la metrópolis.
-> Cada ladrillo roto libera color; cada combo, acelera la reconstrucción.
+> **LUMEN**, el último fotón de una ciudad que olvidó su color, rompe los bloques del Apagón para
+> devolverle la luz — sin saber que cada bloque es un recuerdo suyo, y que el último que quede en pie
+> decidirá si la ciudad vuelve a brillar **o vuelve a recordar**.
 
-### Resonancia Ludonarrativa
+### Lore: las tres Leyes de la Luz
 
-La mecánica principal —romper bloques con una bola que rebota— **es** la narrativa. No hay
-disociación entre lo que el jugador hace y lo que la historia dice que pasa:
+| Ley | Enunciado | Dónde se aprende |
+|---|---|---|
+| I | Toda luz que golpea, vuelve | Eco del Sector 1 + aviso al golpear en el borde de la paleta |
+| II | Romper libera color, pero borra el recuerdo | Eco del Sector 2 + el Interludio |
+| III | La última luz no se rompe: se refleja | Eco del Sector 3 + la cámara final |
 
-- **Romper un ladrillo** = liberar un píxel de color estancado.
-- **El combo** = la inercia de la reconstrucción: a más bloques seguidos sin tocar la paleta, más
-  rápido se recupera el brillo (y más puntos, porque el multiplicador sube).
-- **Perder una vida** = la esfera pierde energía y hay que reinitciar el sector.
-- **Limpiar un nivel** = sector restaurado, la ciudad recupera un bloque de color completo.
+No aparecen en un manual: se **descubren jugando**, como objetos `◈` que la bola debe tocar. Cada
+Eco suma MEMORIA, puntos y energía de resonancia. Encontrar los tres adelanta la pista del final.
 
-El aprendizaje educativo que exige el proyecto (física arcade, colisiones, arquitectura de escenas
-en Phaser 3) está embebido en la implementación: el código es legible, comentado en español y
-diseñado para que un estudiante pueda leerlo y entenderlo.
+### Resonancia: ¿por qué esta mecánica justifica el aprendizaje?
+
+El proyecto exige un componente educativo, y el taller pregunta *«¿cómo hacemos que aprender sea
+divertido y no un castigo?»*. La respuesta está en la física del juego:
+
+- El **ángulo de salida depende del punto de impacto** en la paleta (`golpePaleta()`): eso es
+  literalmente *incidencia = reflexión*. El jugador lo descubre probando, no leyendo una fórmula.
+- El **Pulso de Resonancia** (`E` / clic derecho) curva la trayectoria sin romper nada: enseña
+  vector y módulo de velocidad conservando la intuición.
+- Los **consejos de física son diegéticos**: los susurra el mundo cuando haces algo notable, no un
+  panel de "respuesta incorrecta". No hay exámenes, ni preguntas, ni penalización por no saber.
+- **Aprender enciende la ciudad**: cada ley descubierta incrementa `MEMORIA`, ilumina gemas y
+  recarga la resonancia. El conocimiento es un recurso del juego, no una obligación.
+
+El código además es material de estudio: 6 escenas con una responsabilidad cada una, comentado
+en español, sin bundler, legible de arriba a abajo.
+
+### Identidad, giro y secreto
+
+Durante tres sectores el juego te entrena para **no dejar caer la bola**. Tras limpiar el tercero
+aparece el **Interludio**, una escena propia que revela que los bloques eran los recuerdos de la
+ciudad y que el Apagón era la sombra del propio LUMEN.
+
+Después llega **EL NÚCLEO**: un único bloque dorado y una orden engañosa,
+*«ROMPE EL ÚLTIMO FOTÓN»*. Hay dos salidas:
+
+- **Romperlo** → final hueco: la ciudad brilla, pero nadie recuerda por qué. No pierdes el esfuerzo:
+  puedes volver al Núcleo con `R` conservando puntos y estadísticas.
+- **No romperlo** → final verdadero. Dos formas de lograrlo: **dejar caer la bola** (lo que todo el
+  juego te castigó por hacer se convierte en la solución) o **mantener `R`** (el truco secreto que
+  insinúa el glifo `◈ R`). Si escuchaste las tres leyes, la pista aparece de inmediato; si no, el
+  juego te la susurra a los 11 segundos.
+
+### El orgullo de terminar
+
+El final verdadero recompone la ciudad como constelación, entrega el **Sello del Último Fotón**,
+el rango **Guardián del Último Fotón**, un panel con 5 estadísticas y un **Código de Luz**
+compartible derivado de la partida. El sello se guarda en `localStorage` y el menú lo muestra en
+las siguientes sesiones: el esfuerzo deja huella.
 
 ---
 
-## Misión 2: Las Reglas del Mundo Real (Legal y Ético)
+## Misión 2: Las Reglas del Mundo Real (FASE 2 — Estructura de Cumplimiento)
+
+| Exigencia del material | Respuesta del proyecto |
+|---|---|
+| **Clasificación de audiencia (ESRB)** | E / PEGI 3 |
+| **Justificación: intensidad visual** | Destellos, partículas y *shake* de cámara de 60–320 ms; estímulos abstractos, sin daño a seres |
+| **Tono** | Adaptación creativa: «violencia mínima contra bloques inanimados que no sienten dolor (lo dice su licencia de software)» |
+| **Auditoría de licencias libres** | Muro de Honor en la landing |
+| **Atribución de arte externo** | No hay arte externo: todo es procedural CC0; se acredita Phaser (MIT) y la fuente del SO |
+| **Privacidad: manejo de datos locales** | Ver apartado siguiente |
 
 ### Clasificación Creativa
 
@@ -50,11 +105,17 @@ no sienten dolor (lo dice su licencia de software).
 
 Equivalente formal: **ESRB E** / **PEGI 3**.
 
+### Privacidad · Manejo de datos locales
+
+No hay servidor, cuentas, analytics ni cookies de terceros. Todo se guarda en el `localStorage` del
+propio navegador: récord (`neonbreaker:record`) y sello (`neonbreaker:sello`). En modo incógnito
+el juego funciona igual; simplemente no persiste. Ningún dato sale del equipo del jugador.
+
 ### Muro de Honor
 
 | Recurso | Origen | Licencia |
 |---|---|---|
-| Texturas (ladrillos, bola, paleta, power-ups) | Generadas con Phaser Graphics | CC0 |
+| Texturas (ladrillos, bola, paleta, power-ups, Eco, Fotón) | Phaser Graphics | CC0 |
 | Fondo estrellado y halo radial | Canvas API + tileSprite | CC0 |
 | Efectos de sonido | Web Audio API (osciladores) | CC0 |
 | Motor de juego (Phaser 3.90) | photonstorm.github.io | MIT |
@@ -160,14 +221,16 @@ manotoa-axel-jueg-gr3/
 │   └── index.html          # Canvas de Phaser (el juego)
 ├── game.js                 # Configuración del juego
 ├── js/
-│   ├── util.js
+│   ├── util.js                # Récord, formato de tiempo, sonido WebAudio
+│   ├── historia.js            # Logline, Lore, Leyes, giros, finales y Sello
 │   ├── niveles.js
 │   ├── texturas.js
 │   └── escenas/
 │       ├── BootScene.js
 │       ├── PreloaderScene.js
 │       ├── MenuScene.js
-│       ├── JuegoScene.js
+│       ├── JuegoScene.js      # Ecos, Resonancia, sectores y EL NÚCLEO
+│       ├── InterludioScene.js # El giro narrativo
 │       └── FinScene.js
 ├── .github/
 │   └── workflows/

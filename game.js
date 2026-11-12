@@ -20,7 +20,7 @@ const CONFIG = {
     mode: Phaser.Scale.FIT,   // se adapta a cualquier pantalla sin deformarse
     autoCenter: Phaser.Scale.CENTER_BOTH
   },
-  scene: [BootScene, PreloaderScene, MenuScene, JuegoScene, FinScene]
+  scene: [BootScene, PreloaderScene, MenuScene, JuegoScene, InterludioScene, FinScene]
 };
 
 const juego = new Phaser.Game(CONFIG);

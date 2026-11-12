@@ -1,8 +1,12 @@
-# NEÓN BREAKER — Axel Manotoa
+# NEÓN BREAKER — El Último Fotón
 
 Juego tipo **Arkanoid / Breakout** hecho con **Phaser 3 (CDN, sin build)** y publicado en
-**GitHub Pages** e **Itch.io**. Incluye landing page inmersiva, narrativa, marco legal y CI/CD
-automático con GitHub Actions.
+**GitHub Pages** e **Itch.io**. Incluye landing page inmersiva, narrativa jugable, marco legal y
+CI/CD automático con GitHub Actions.
+
+> **Logline:** LUMEN, el último fotón de una ciudad que olvidó su color, rompe los bloques del
+> Apagón para devolverle la luz — sin saber que cada bloque es un recuerdo suyo, y que el último
+> que quede en pie decidirá si la ciudad vuelve a brillar **o vuelve a recordar**.
 
 **Autor:** Axel Manotoa · **Curso:** ISWD823 · **Repositorio:** `manotoa-axel-jueg-gr3`
 
@@ -40,15 +44,17 @@ manotoa-axel-jueg-gr3/
 │   └── index.html             # Canvas de Phaser (el juego)
 ├── game.js                    # Configuración del juego
 ├── js/
-│   ├── util.js                # Récord en localStorage + sonido con WebAudio
-│   ├── niveles.js             # Medidas del tablero y los 3 niveles
-│   ├── texturas.js            # Assets procedurales (bola, paleta, ladrillos, power-ups)
+│   ├── util.js                # Récord, formato de tiempo, sonido WebAudio
+│   ├── historia.js            # Logline, Lore (3 Leyes), giros, finales y Sello
+│   ├── niveles.js             # Medidas del tablero y los 3 sectores
+│   ├── texturas.js            # Assets procedurales (+ Eco y Último Fotón)
 │   └── escenas/
 │       ├── BootScene.js       # Arranque
 │       ├── PreloaderScene.js  # Barra de avance + generación de texturas
-│       ├── MenuScene.js       # Título, controles y récord
-│       ├── JuegoScene.js      # Núcleo: paleta, bola, ladrillos, power-ups, HUD
-│       └── FinScene.js        # Game over / victoria
+│       ├── MenuScene.js       # Título, leyes, controles, Sello persistente
+│       ├── JuegoScene.js      # Ecos, Resonancia, sectores y EL NÚCLEO
+│       ├── InterludioScene.js # El giro narrativo
+│       └── FinScene.js        # Dos finales, Sello, rango y Código de Luz
 ├── .github/
 │   └── workflows/
 │       └── deploy-itchio.yml  # CI/CD: despliegue automático a Itch.io
@@ -118,7 +124,7 @@ const CONFIG = {
   height: 600,
   physics: { default: 'arcade', arcade: { gravity: { y: 0 }, debug: false } },
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-  scene: [BootScene, PreloaderScene, MenuScene, JuegoScene, FinScene]
+  scene: [BootScene, PreloaderScene, MenuScene, JuegoScene, InterludioScene, FinScene]
 };
 
 const juego = new Phaser.Game(CONFIG);
@@ -180,16 +186,26 @@ Y jugar y comentar el proyecto de **al menos dos compañeros**.
 
 | Elemento | Comportamiento |
 |---|---|
-| **Paleta** | Se mueve con ← → / A D o con el mouse. El ángulo de salida depende de **dónde** golpea la bola: centro = recto, borde = diagonal. |
-| **Bola** | Rebota con elástica total. Se acelera un poco con cada ladrillo roto (hasta 640). |
-| **Ladrillos** | 6 colores. En el nivel 2 y 3 las filas de arriba aguantan **2 golpes** (se aclaran al primero). |
-| **Combo** | Cada ladrillo roto sin tocar la paleta sube el multiplicador (x2, x3… hasta x5). Se reinicia al tocar la paleta. |
-| **Power-ups** | Caen de vez en cuando (14 %): **paleta ancha** (9 s), **multibola** (+2 bolas), **vida extra**. |
-| **Vidas** | 3 (máximo 5). Se pierde al dejar caer todas las bolas. |
-| **Niveles** | 3: CLÁSICO (60 ladrillos), PIRÁMIDE (40) y MURALLAS (40, con dobles). Al limpiar uno, +100 puntos. |
-| **Fin** | Sin vidas → *Game Over*; nivel 3 limpio → *Victoria*. El puntaje se guarda como récord en el navegador. |
+| **Paleta** | ← → / A D / mouse. El ángulo de salida depende de **dónde** golpea la bola: centro = recto, borde = diagonal. Es la Ley I (incidencia = reflexión). |
+| **Bola (LUMEN)** | Rebote elástico total. Se acelera con cada ladrillo roto (hasta 640). |
+| **Ladrillos** | 6 colores. Sectores 2 y 3 tienen filas de **2 golpes**. Cada uno roto borra el nombre de lo que iluminaba. |
+| **Combo** | Cada ladrillo sin tocar la paleta sube el multiplicador (hasta x5). Se reinicia al tocar la paleta. |
+| **Ecos de Memoria** | Un rombo `◈` oculto por sector. Tocarlo con la bola revela una de las **3 Leyes de la Luz** y suma MEMORIA, puntos y resonancia. |
+| **Pulso de Resonancia** | `E` o clic derecho: curva la trayectoria de la bola cercana sin romper nada. Consume 25 de energía; se recarga al romper bloques y al descubrir leyes. |
+| **Gemas de color** | Tres estrellas en el HUD que se encienden al restaurar cada sector. El fondo también se satura con el progreso. |
+| **La voz del Apagón** | Un susurro distinto por sector y consejos de física diegéticos cuando haces algo notable. |
+| **Power-ups** | 14 %: **paleta ancha** (9 s), **multibola** (+2 bolas), **vida extra**. |
+| **Vidas** | 3 (máximo 5). |
+| **Sectores** | 3: CIRCUITOS DEL ALBA (60), TORRE DE FRECUENCIAS (40), ARCHIVO DEL APAGÓN (40). |
+| **Interludio** | Al limpiar el tercer sector, el juego se detiene y revela el giro: los bloques eran recuerdos y el Apagón era la sombra de LUMEN. |
+| **El Núcleo** | Un único bloque dorado y la orden engañosa «ROMPE EL ÚLTIMO FOTÓN». |
+| **Dos finales** | Romperlo → *La ciudad brilla, pero nadie recuerda por qué* (se puede reintentar sin perder puntos). No romperlo → **final verdadero**, con Sello, rango, estadísticas y Código de Luz persistente. |
+| **Truco secreto** | Mantener `R` en el Núcleo, o dejar caer la bola a propósito (justo lo que el juego te castigó por hacer durante tres sectores). |
 
-**Controles:** ← → / A D / mouse · **ESPACIO o clic** lanzar · **P o ESC** pausa · **M** silencio.
+**Controles:** ← → / A D / mouse · **ESPACIO o clic** lanzar · **E** resonancia · **◈ R** el secreto · **P o ESC** pausa · **M** silencio.
+
+> La narrativa completa, el giro y la justificación de Lore/Resonancia/Identidad están explicados
+> en `docs/PREPRODUCCION.md`. Todos los textos viven en `js/historia.js`.
 
 ---
 
