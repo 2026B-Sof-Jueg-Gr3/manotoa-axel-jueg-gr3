@@ -65,7 +65,7 @@ Valores exactos para cada campo del formulario:
 | **Release status** | `Released – Project is complete, but might receive some updates` ✅ |
 | **Pricing** | mejor **`No payments`** (evita la pantalla de donación; `$0 or donate` también sirve) |
 | **Cover image** | `portada-itchio.png` (630 × 500, generada para este proyecto) |
-| **Screenshots** | sube 3 de `docs/capturas/`: `01-menu.png`, `03-jugando.png`, `05-fin.png` |
+| **Screenshots** | sube 3 de `docs/capturas/`: `01-menu.png`, `03-jugando.png`, `07-nucleo.png` (la del Núcleo intriga sin spoilear) |
 | **Upload / files** | sube **`neon-breaker-itchio.zip`** (310 KB). Trae `index.html` en la raíz y Phaser incluido |
 | **Embed options** | **Manually set size** → ancho `800` × alto `600` (la medida real del juego) |
 | **Frame options** | ✅ `Fullscreen button` · ✅ `Mobile friendly` · ❌ el resto (scrollbars, auto-start, SharedArrayBuffer) |

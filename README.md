@@ -18,6 +18,9 @@ CI/CD automático con GitHub Actions.
 
 ![Menú](docs/capturas/01-menu.png)
 ![Jugando](docs/capturas/03-jugando.png)
+![El giro](docs/capturas/06-interludio.png)
+![El Núcleo](docs/capturas/07-nucleo.png)
+![Final verdadero](docs/capturas/08-final-verdadero.png)
 
 ---
 
