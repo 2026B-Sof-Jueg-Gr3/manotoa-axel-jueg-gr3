@@ -119,12 +119,15 @@ El workflow se activa en cada **push a `main`** y hace lo siguiente:
 1. **Checkout** del repositorio con `actions/checkout@v4`.
 2. **Verifica los Secrets.** Si faltan, el job acaba en verde con un `::warning::` y omite el
    despliegue: así un push no genera correos de error mientras se configura la cuenta.
-3. **Empaqueta** el juego (`index.html`, `juego/`, `js/`, `game.js`, `docs/` → `dist/`) y valida
-   que los tres archivos clave existen.
+3. **Empaqueta para el embed.** El `index.html` de `dist/` es el **juego** (copiado de
+   `juego/index.html`, con las rutas `../` reescritas), no la landing page: la landing hace scroll
+   y se cortaría dentro del iframe de itch.io. Además se descarga `phaser.min.js` al paquete,
+   así el juego funciona **sin peticiones externas** dentro del iframe.
 4. **Instala Butler** desde `broth.itch.zone` (v15.x) y ejecuta
    `butler push dist usuario/juego:web --userversion <sha>`, con `BUTLER_API_KEY` como variable
    de entorno. Los Secrets se pasan por `env`, no interpolados en el `run`.
-5. **Recuerda** que el canal `web` debe marcarse a mano como *HTML5 / Playable in browser* en itch.io.
+5. **Recuerda** que el canal `web` debe marcarse a mano como *HTML5 / Playable in browser* en itch.io,
+   y que el embed debe configurarse a **800 × 600**, la medida real del lienzo de Phaser.
 
 > **Por qué no se usa la acción del marketplace:** `josephbmanley/butler-publish-itchio-action@v1.0.3`
 > construye un Docker que descarga Butler desde `broth.itch.ovh`, un dominio que ya no resuelve

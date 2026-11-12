@@ -57,10 +57,24 @@ Valores exactos para cada campo del formulario:
 | **Pricing** | mejor **`No payments`** (evita la pantalla de donación; `$0 or donate` también sirve) |
 | **Cover image** | `portada-itchio.png` (630 × 500, generada para este proyecto) |
 | **Screenshots** | sube 3 de `docs/capturas/`: `01-menu.png`, `03-jugando.png`, `05-fin.png` |
-| **Upload / files** | sube `neon-breaker-web.zip` (19 KB); trae `index.html` en la raíz |
+| **Upload / files** | sube **`neon-breaker-itchio.zip`** (310 KB). Trae `index.html` en la raíz y Phaser incluido |
+| **Embed options** | **Manually set size** → ancho `800` × alto `600` (la medida real del juego) |
+| **Frame options** | ✅ `Fullscreen button` · ✅ `Mobile friendly` · ❌ el resto (scrollbars, auto-start, SharedArrayBuffer) |
+| **Description** | pega el contenido de `descripcion-itchio.html` |
+| **Genre** | `Arcade` |
+| **Tags** | `breakout`, `arkanoid`, `phaser`, `neon`, `retro`, `combo`, `powerups`, `student-project` |
+| **AI generation disclosure** | **Yes** (el código y los textos se escribieron con asistencia de un LLM; el arte y el sonido son procedurales) |
+| **App store links / Custom noun** | dejar vacío |
+| **Community** | `Comments` activado (para que los compañeros puedan comentar) |
+| **Visibility & access** | **`Public`** — si solo te deja `Draft`, guarda y cámbialo a Public desde *Edit game* |
 
 > **El usuario es `axel112004`**, no `axel-manotoa`. Ese mismo valor va en el Secret
 > `ITCHIO_USERNAME` y en todos los enlaces. El slug del juego es `neon-breaker`.
+
+> **Usa `neon-breaker-itchio.zip`, no `neon-breaker-web.zip`.** El primero arranca directo en el
+> juego y lleva Phaser dentro (0 peticiones externas); el segundo empieza en la landing page, que
+> hace scroll y se cortaría dentro del iframe de itch.io. La landing page ya cumple su función en
+> GitHub Pages, así que en itch.io no hace falta repetirla.
 
 Después de guardar, ve a **Edit game** y confirma que el ZIP quedó marcado como
 *HTML5 / Playable in browser* (ver Paso 5).
@@ -105,8 +119,14 @@ llame `web`. Después del primer push correcto:
 3. Cambia el tipo de la página de *Downloadable* a **HTML**.
 4. **Save**. A partir de ahí el juego se juega en el navegador dentro de itch.io.
 
-> Ojo: el `index.html` de la raíz del paquete es la landing page, y el botón JUGAR abre
-> `juego/index.html`. Ambos van en el mismo ZIP, así que el embed funciona tal cual.
+> El `index.html` de la raíz del paquete **es el juego** (no la landing), y Phaser va dentro del
+> ZIP. Verificado: 0 peticiones externas, 60 ladrillos, bola a 360, sin errores de consola.
+
+> **Sobre los dos uploads:** Butler publica en el canal `web`, que es un *slot* distinto al archivo
+> que subiste a mano desde el formulario (ese no tiene canal). Tras el primer push correcto
+> aparecerán dos archivos en *Edit game*: deja el del canal `web` y borra el manual, para que solo
+> quede el que se actualiza automáticamente. También puedes saltarte la subida manual y dejar que
+> Butler cree el único upload.
 
 ## Si algo falla
 

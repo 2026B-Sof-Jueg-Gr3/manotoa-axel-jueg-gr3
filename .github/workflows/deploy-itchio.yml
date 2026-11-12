@@ -54,13 +54,22 @@ jobs:
             echo "Configuracion completa. Destino: $ITCH_USER/$ITCH_GAME:web"
           fi
 
-      # 3. Empaquetar el juego (se ejecuta siempre: valida que todo existe)
+      # 3. Empaquetar el juego PARA EL EMBED de itch.io.
+      #    Importante: index.html debe ser el JUEGO, no la landing page
+      #    (la landing hace scroll y se cortaria dentro del iframe).
+      #    Phaser se descarga al paquete para que el juego no dependa de
+      #    ningun CDN dentro del iframe de itch.io.
       - name: Pack game files
         run: |
           mkdir -p dist
-          cp -r index.html juego js game.js docs dist/
-          test -f dist/index.html && test -f dist/juego/index.html && test -f dist/game.js
-          echo "Paquete listo:"
+          cp -r js game.js dist/
+          cp juego/index.html dist/index.html
+          sed -i 's|src="../|src="|g' dist/index.html
+          curl -fL -o dist/phaser.min.js https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js
+          sed -i 's|https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js|phaser.min.js|' dist/index.html
+          test -f dist/index.html && test -f dist/game.js && test -f dist/phaser.min.js
+          test -f dist/js/escenas/JuegoScene.js
+          echo "Paquete listo (autocontenido):"
           find dist -type f | sort
 
       # 4. Instalar Butler desde el mirror oficial actual.
