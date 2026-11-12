@@ -103,10 +103,10 @@ y el juego sea el destino del botón.
 
 ### Configuración
 
-- **Usuario:** `axel-manotoa`
+- **Usuario:** `axel112004`
 - **Juego:** `neon-breaker`
 - **Canal:** `web` (HTML5 jugable en navegador)
-- **URL:** https://axel-manotoa.itch.io/neon-breaker
+- **URL:** https://axel112004.itch.io/neon-breaker
 
 ---
 
@@ -135,7 +135,7 @@ El workflow se activa en cada **push a `main`** y hace lo siguiente:
 | Secret | Valor |
 |---|---|
 | `ITCHIO_API_KEY` | API key generada en itch.io/profile/api-keys |
-| `ITCHIO_USERNAME` | `axel-manotoa` |
+| `ITCHIO_USERNAME` | `axel112004` |
 | `ITCHIO_GAME` | `neon-breaker` |
 
 ### Cómo funciona en la práctica

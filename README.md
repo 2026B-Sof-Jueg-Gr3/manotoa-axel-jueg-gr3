@@ -1,14 +1,16 @@
-# NEÓN BREAKER — Taller Práctico: Setup, Desarrollo y Despliegue con Phaser 3
+# NEÓN BREAKER — Axel Manotoa
 
 Juego tipo **Arkanoid / Breakout** hecho con **Phaser 3 (CDN, sin build)** y publicado en
-**GitHub Pages**. Es la resolución del reto individual del taller: un juego propio, terminado y
-jugable, con tres niveles, power-ups, puntaje y récord.
+**GitHub Pages** e **Itch.io**. Incluye landing page inmersiva, narrativa, marco legal y CI/CD
+automático con GitHub Actions.
 
 **Autor:** Axel Manotoa · **Curso:** ISWD823 · **Repositorio:** `manotoa-axel-jueg-gr3`
 
-> **Entrega:** enlace público de GitHub Pages + enlace del repositorio en el canal de Teams.
-> - Juego: https://2026b-sof-jueg-gr3.github.io/manotoa-axel-jueg-gr3/
+> **Enlaces:**
+> - Landing Page: https://2026b-sof-jueg-gr3.github.io/manotoa-axel-jueg-gr3/
+> - Juego directo: https://2026b-sof-jueg-gr3.github.io/manotoa-axel-jueg-gr3/juego/index.html
 > - Código: https://github.com/2026B-Sof-Jueg-Gr3/manotoa-axel-jueg-gr3
+> - Itch.io: https://axel112004.itch.io/neon-breaker
 
 ![Menú](docs/capturas/01-menu.png)
 ![Jugando](docs/capturas/03-jugando.png)
@@ -33,8 +35,10 @@ elegir uno propio. Se eligió el rompe-ladrillos porque:
 
 ```
 manotoa-axel-jueg-gr3/
-├── index.html                 # Punto de entrada · Phaser por CDN
-├── game.js                    # Configuración del juego (Paso 4 del taller)
+├── index.html                 # Landing page inmersiva (Misión 3 del taller 2)
+├── juego/
+│   └── index.html             # Canvas de Phaser (el juego)
+├── game.js                    # Configuración del juego
 ├── js/
 │   ├── util.js                # Récord en localStorage + sonido con WebAudio
 │   ├── niveles.js             # Medidas del tablero y los 3 niveles
@@ -45,9 +49,14 @@ manotoa-axel-jueg-gr3/
 │       ├── MenuScene.js       # Título, controles y récord
 │       ├── JuegoScene.js      # Núcleo: paleta, bola, ladrillos, power-ups, HUD
 │       └── FinScene.js        # Game over / victoria
+├── .github/
+│   └── workflows/
+│       └── deploy-itchio.yml  # CI/CD: despliegue automático a Itch.io
 ├── docs/
 │   ├── ANALISIS.md            # Análisis del material + decisiones
-│   ├── ENTREGA.md             # Checklist y mensaje de Teams
+│   ├── ENTREGA.md             # Entrega del taller 1
+│   ├── ENTREGA-TALLER2.md     # Entrega de Pre-Producción y CI/CD
+│   ├── PREPRODUCCION.md       # Análisis de las 4 misiones + CI/CD
 │   └── capturas/
 └── README.md
 ```

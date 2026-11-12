@@ -9,7 +9,7 @@
 #    2. Settings > API keys > generar una nueva key
 #    3. En GitHub: Settings > Secrets and variables > Actions
 #       - ITCHIO_API_KEY  = la key generada
-#       - ITCHIO_USERNAME = tu usuario de itch.io (ej: axel-manotoa)
+#       - ITCHIO_USERNAME = tu usuario de itch.io (ej: axel112004)
 #       - ITCHIO_GAME     = slug del juego (ej: neon-breaker)
 #
 #  Mientras no estén los 3 Secrets, el job termina en VERDE con un

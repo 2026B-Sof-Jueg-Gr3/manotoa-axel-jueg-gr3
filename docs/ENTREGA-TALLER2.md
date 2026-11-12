@@ -6,7 +6,7 @@
 Taller Pre-Producción y CI/CD — Axel Manotoa
 
 Landing Page (GitHub Pages): https://2026b-sof-jueg-gr3.github.io/manotoa-axel-jueg-gr3/
-Plataforma Indie (Itch.io): https://axel-manotoa.itch.io/neon-breaker
+Plataforma Indie (Itch.io): https://axel112004.itch.io/neon-breaker
 
 CI/CD configurado con GitHub Actions + Butler:
 Archivo YAML: .github/workflows/deploy-itchio.yml
@@ -42,16 +42,28 @@ Licencia: MIT · Assets procedimentales CC0.
 
 ## Lo que falta (requiere tu cuenta de Itch.io)
 
-### Paso 1 — Crear cuenta y proyecto en Itch.io
+### Paso 1 — Crear el proyecto en Itch.io (`https://itch.io/game/new`)
 
-1. Entra a https://itch.io/register y crea una cuenta gratuita.
-2. Ve a https://itch.io/game/new y crea el proyecto:
-   - **Title:** Neon Breaker
-   - **Classification:** Game
-   - **Kind of project:** HTML
-   - **Upload:** sube un ZIP con `index.html`, `game.js` y `js/` (o espera al CI/CD)
-   - **Embed options:** selecciona "Play in browser"
-3. Guarda y publica.
+Valores exactos para cada campo del formulario:
+
+| Campo | Valor |
+|---|---|
+| **Title** | `Neon Breaker` |
+| **Project URL** | `https://axel112004.itch.io/neon-breaker` (ya aparece así, déjalo) |
+| **Short description or tagline** | `Una esfera cuántica debe devolverle el color a la ciudad neón.` |
+| **Classification** | `Games – A piece of software you can play` ✅ |
+| **Kind of project** | `HTML – You have a ZIP or HTML file that will be played in the browser` ✅ |
+| **Release status** | `Released – Project is complete, but might receive some updates` ✅ |
+| **Pricing** | mejor **`No payments`** (evita la pantalla de donación; `$0 or donate` también sirve) |
+| **Cover image** | `portada-itchio.png` (630 × 500, generada para este proyecto) |
+| **Screenshots** | sube 3 de `docs/capturas/`: `01-menu.png`, `03-jugando.png`, `05-fin.png` |
+| **Upload / files** | sube `neon-breaker-web.zip` (19 KB); trae `index.html` en la raíz |
+
+> **El usuario es `axel112004`**, no `axel-manotoa`. Ese mismo valor va en el Secret
+> `ITCHIO_USERNAME` y en todos los enlaces. El slug del juego es `neon-breaker`.
+
+Después de guardar, ve a **Edit game** y confirma que el ZIP quedó marcado como
+*HTML5 / Playable in browser* (ver Paso 5).
 
 ### Paso 2 — Generar API Key
 
@@ -67,7 +79,7 @@ Licencia: MIT · Assets procedimentales CC0.
 | Name | Value |
 |---|---|
 | `ITCHIO_API_KEY` | (la key del paso 2) |
-| `ITCHIO_USERNAME` | `axel-manotoa` (tu usuario de itch.io) |
+| `ITCHIO_USERNAME` | `axel112004` (tu usuario de itch.io) |
 | `ITCHIO_GAME` | `neon-breaker` (el slug del juego) |
 
 ### Paso 4 — Probar el CI/CD
